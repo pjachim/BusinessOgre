@@ -3,7 +3,7 @@ requires = ["hatchling>=1.24.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "businessogre"
+name = "business_ogre"
 version = "0.0.3"
 description = "Placeholder package scaffold for BusinessOgre"
 readme = "README.md"
