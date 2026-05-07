@@ -8,11 +8,12 @@ on:
 jobs:
   trigger:
     runs-on: ubuntu-latest
+    environment: readthedocs
     steps:
       - name: Validate Read the Docs secrets
         env:
-          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
-          READTHEDOCS_PROJECT_SLUG: ${{ secrets.READTHEDOCS_PROJECT_SLUG }}
+          READTHEDOCS_TOKEN: ${{ READTHEDOCS_TOKEN }}
+          READTHEDOCS_PROJECT_SLUG: ${{ READTHEDOCS_PROJECT_SLUG }}
         run: |
           if [[ -z "${READTHEDOCS_TOKEN}" ]]; then
             echo "Missing READTHEDOCS_TOKEN secret"
@@ -26,8 +27,8 @@ jobs:
 
       - name: Trigger latest docs build
         env:
-          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
-          READTHEDOCS_PROJECT_SLUG: ${{ secrets.READTHEDOCS_PROJECT_SLUG }}
+          READTHEDOCS_TOKEN: ${{ READTHEDOCS_TOKEN }}
+          READTHEDOCS_PROJECT_SLUG: ${{ READTHEDOCS_PROJECT_SLUG }}
         run: |
           curl --fail --silent --show-error \
             -X POST \
