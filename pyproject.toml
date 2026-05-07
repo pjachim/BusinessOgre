@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "businessogre"
-version = "0.0.1"
+version = "0.0.2"
 description = "Placeholder package scaffold for BusinessOgre"
 readme = "README.md"
 requires-python = ">=3.10"
