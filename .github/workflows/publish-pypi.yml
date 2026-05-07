@@ -1,12 +1,57 @@
 name: Publish to PyPI
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.meta.outputs.package_name }}
+      version: ${{ steps.meta.outputs.version }}
+      exists: ${{ steps.meta.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Read package metadata
+        id: meta
+        run: |
+          python - <<'PY'
+          import os
+          import tomllib
+          import urllib.error
+          import urllib.request
+
+          with open("pyproject.toml", "rb") as f:
+              project = tomllib.load(f)["project"]
+
+          package_name = project["name"]
+          version = project["version"]
+          url = f"https://pypi.org/pypi/{package_name}/{version}/json"
+
+          exists = False
+          try:
+              urllib.request.urlopen(url)
+              exists = True
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"package_name={package_name}\n")
+              out.write(f"version={version}\n")
+              out.write(f"exists={'true' if exists else 'false'}\n")
+          PY
+
   build:
+    needs: [prepare]
+    if: needs.prepare.outputs.exists != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +73,8 @@ jobs:
           path: dist/
 
   publish:
-    needs: [build]
+    needs: [prepare, build]
+    if: needs.prepare.outputs.exists != 'true'
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -44,3 +90,13 @@ jobs:
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  skip-existing-version:
+    needs: [prepare]
+    if: needs.prepare.outputs.exists == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip publish
+        run: |
+          echo "${{ needs.prepare.outputs.package_name }}==${{ needs.prepare.outputs.version }} already exists on PyPI."
+          echo "Skipping publish for this push."

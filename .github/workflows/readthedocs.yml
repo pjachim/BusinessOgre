@@ -1,0 +1,37 @@
+name: Trigger Read the Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Read the Docs secrets
+        env:
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
+          READTHEDOCS_PROJECT_SLUG: ${{ secrets.READTHEDOCS_PROJECT_SLUG }}
+        run: |
+          if [[ -z "${READTHEDOCS_TOKEN}" ]]; then
+            echo "Missing READTHEDOCS_TOKEN secret"
+            exit 1
+          fi
+
+          if [[ -z "${READTHEDOCS_PROJECT_SLUG}" ]]; then
+            echo "Missing READTHEDOCS_PROJECT_SLUG secret"
+            exit 1
+          fi
+
+      - name: Trigger latest docs build
+        env:
+          READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
+          READTHEDOCS_PROJECT_SLUG: ${{ secrets.READTHEDOCS_PROJECT_SLUG }}
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Token ${READTHEDOCS_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "https://readthedocs.org/api/v3/projects/${READTHEDOCS_PROJECT_SLUG}/versions/latest/builds/"
