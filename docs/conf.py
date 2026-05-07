@@ -1,5 +1,5 @@
 project = "BusinessOgre"
-author = "TODO"
+author = "Peter Jachim"
 release = "0.0.4"
 
 extensions = []
