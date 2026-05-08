@@ -10,7 +10,7 @@ pip install -e .
 ```
 
 Quick sanity check after install:
-```{python}
+```python
 import business_ogre as ogr
 
 print(ogr.WorkflowBlock)
