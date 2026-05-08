@@ -28,3 +28,8 @@ Documentation = "https://businessogre.readthedocs.io"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/businessogre"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
