@@ -27,7 +27,7 @@ Repository = "https://github.com/pjachim/BusinessOgre"
 Documentation = "https://businessogre.readthedocs.io"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/businessogre"]
+packages = ["src/business_ogre"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -4,13 +4,13 @@ The goal of using BusinessOgre is to create a neat business layer that is useful
 To achieve that, this page presents a few thoughts for how to accomplish that.
 
 Standard import style used in this project:
-```{python}
+```python
 import business_ogre as ogr
 ```
 
 ## File Structure
 I recommend having a single file that just contains the information for the business layer. For a very basic data retrieval/filter process the business layer might look like this, where the instantiated classes are imported:
-```{python}
+```python
 import data_retrieval as dr
 import filter_actions as fr
 import make_nice_spreadsheet as mns
@@ -21,7 +21,7 @@ build_active_customer_report = dr.query_customer_table >> fr.active_customers >>
 
 In this example, the classes are already instantiated, which reduces the ability to pass arguments in the business file. It might be appropriate to, in specific contexts, instantiate the classes inside the business file to clarify the parameters you are passing to workflow blocks.
 
-```{python}
+```python
 from data_retrieval import DataRetrieval
 from filter_actions import FilterAction
 from make_nice_spreadsheet import MakeNiceSpreadsheet
@@ -45,7 +45,7 @@ build_active_customer_report = query_customer_table >> active_customers >> outpu
 
 > ### Note:
 > To pass arguments to the workflows as in the example above, you need to overwrite the `.__init__()` method.
-> ```{python}
+> ```python
 > import business_ogre as ogr
 > 
 > class DataRetrieval(ogr.WorkflowBlock):

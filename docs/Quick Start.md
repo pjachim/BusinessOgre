@@ -19,7 +19,7 @@ The key to using business ogre is defining the code blocks. These are classes th
 
 Standard import style used in this project:
 
-```{python}
+```python
 import business_ogre as ogr
 
 # Define some example WorkflowBlocks
@@ -41,20 +41,20 @@ class AddExclamation(ogr.WorkflowBlock):
 ```
 
 Next you need to instantiate the blocks:
-```{python}
+```python
 # Instantiating each block:
 make_uppercase_step = MakeTextUppercase('Uppercase')
 add_exclamation_step = AddExclamation('Add Exclamation')
 ```
 
 Now that the blocks are instantiated, you can create pipelines using the `>>` operator.
-```{python}
+```python
 # Using the >> operator joins the blocks into a workflow
 excited_workflow = MakeTextUppercase('Uppercase') >> AddExclamation('Add Exclamation')
 ```
 
 You can treat `excited_workflow` like you would a function.
-```{python}
+```python
 # excited_workflow is callable, inputs will consecutively pass through the blocks:
 excited_workflow('A piece of test text')
 >>> 'A PIECE OF TEST TEXT!'
@@ -65,7 +65,7 @@ str(excited_workflow)
 ```
 
 Here is how you check that all the blocks match up:
-```{python}
+```python
 # Check that the output type of each step matches the input type of the next step.
 # Raises an error if there is a mismatch, otherwise returns True.
 excited_workflow.validate()
