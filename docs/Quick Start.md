@@ -11,11 +11,13 @@ BusinessOgre accomplishes the following:
 ## Example usage of Workflow and WorkflowBlock classes:
 The key to using business ogre is defining the code blocks. These are classes that inherit from the WorkflowBlock class, and add some cool functionality.
 
+Standard import style used in this project:
+
 ```{python}
-from business_ogre.workflow import WorkflowBlock
+import business_ogre as ogr
 
 # Define some example WorkflowBlocks
-class MakeTextUppercase(WorkflowBlock):
+class MakeTextUppercase(ogr.WorkflowBlock):
     input_type = (str,)  # Required for validation
     output_type = (str,) # Required for validation
 
@@ -24,7 +26,7 @@ class MakeTextUppercase(WorkflowBlock):
         return input_data.upper()
 
 # Creating one more:
-class AddExclamation(WorkflowBlock):
+class AddExclamation(ogr.WorkflowBlock):
     input_type = (str,)
     output_type = (str,)
 

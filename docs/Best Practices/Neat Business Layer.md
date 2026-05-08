@@ -41,9 +41,9 @@ build_active_customer_report = query_customer_table >> active_customers >> outpu
 > ### Note:
 > To pass arguments to the workflows as in the example above, you need to overwrite the `.__init__()` method.
 > ```{python}
-> from business_ogre.workflow import WorkflowBlock
+> import business_ogre as ogr
 > 
-> class DataRetrieval(WorkflowBlock):
+> class DataRetrieval(ogr.WorkflowBlock):
 >   def __init__(self, name: str, table: str, columns: list[str]):
 >       self.table = table
 >       self.columns = columns
