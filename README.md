@@ -1,6 +1,8 @@
 # BusinessOgre
 Business Ogre is a business abstraction layer that neatens workflows in your code, forces self-documentation, and simplifies interaction with stakeholders.
 
+If you are new, start with `docs/Installation.md` and then `docs/Quick Start.md`.
+
 ### Example usage of Workflow and WorkflowBlock classes:
 The key to using business ogre is defining the code blocks. These are classes that inherit from the WorkflowBlock class, and add some cool functionality.
 
@@ -59,3 +61,7 @@ excited_workflow.validate()
 ```
 
 Because the flows are callable, they can easily be passed to frontend code that requires a single, neat callable.
+
+For prompt patterns that help generate cleaner workflow files with coding assistants, see:
+- `docs/Prompt Strategies/Workflow Build Prompts.md`
+- `docs/Prompt Strategies/Usable Business File Prompts.md`

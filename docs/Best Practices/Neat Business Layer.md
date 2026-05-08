@@ -3,6 +3,11 @@ The goal of using BusinessOgre is to create a neat business layer that is useful
 
 To achieve that, this page presents a few thoughts for how to accomplish that.
 
+Standard import style used in this project:
+```{python}
+import business_ogre as ogr
+```
+
 ## File Structure
 I recommend having a single file that just contains the information for the business layer. For a very basic data retrieval/filter process the business layer might look like this, where the instantiated classes are imported:
 ```{python}
@@ -55,3 +60,12 @@ build_active_customer_report = query_customer_table >> active_customers >> outpu
 >   def action(self, query: str):
 >       ...
 > ```
+
+## Minimum quality bar for business files
+Before calling a business file done, run this quick check:
+1. Block names are business-readable.
+2. One block does one business action.
+3. The final composed workflow has a clear variable name.
+4. `validate()` succeeds on the final workflow.
+
+These four checks keep your business layer short, useful, and easy to review.
