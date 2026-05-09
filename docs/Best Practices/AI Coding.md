@@ -7,7 +7,6 @@ If you ask for "the whole feature", assistants usually add too much architecture
 Good prompt:
 ```text
 Create one business file for <use case> using WorkflowBlock classes only.
-Use import business_ogre as ogr.
 Return only the classes and one final composed workflow variable.
 ```
 
