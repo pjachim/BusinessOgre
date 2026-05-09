@@ -2,9 +2,17 @@ import base64, gc, json, zlib
 import business_ogre as ogr
 
 class MermaidDiagram:
+    """Build Mermaid flowchart text from workflows and workflow blocks."""
+
     RELEVANT_CLASSES = [ogr.workflow.Workflow, ogr.workflow.WorkflowBlock]
 
     def __init__(self, components):
+        """Initialize a diagram from workflows and/or workflow blocks.
+
+        Args:
+            components: Iterable of workflow components. If ``None``, all live
+                workflow objects tracked by the Python GC are scanned.
+        """
         if components is None:
             components = self._list_all_possible_components()
         self.component_blocks = self.collect_blocks(components)
@@ -13,9 +21,11 @@ class MermaidDiagram:
         self._used_aliases = set()
 
     def _list_all_possible_components(self):
+        """Return all live workflow objects known to the garbage collector."""
         return [o for o in gc.get_objects() if isinstance(o, tuple(self.RELEVANT_CLASSES))]
 
     def collect_blocks(self, components):
+        """Collect unique workflow blocks from mixed workflow components."""
         component_set = set()
         for component in components:
             if isinstance(component, ogr.workflow.Workflow):
@@ -25,6 +35,7 @@ class MermaidDiagram:
         return list(component_set)
 
     def _generate_alias_mappings(self, block):
+        """Create and cache a deterministic Mermaid node alias and label."""
         if block in self._alias_cache:
             return self._alias_cache[block]
 
@@ -54,6 +65,18 @@ class MermaidDiagram:
         return result
 
     def generate_mermaid(self, orientation="LR", output_path=None, create_url=False):
+        """Generate Mermaid flowchart code or a Mermaid Live Editor URL.
+
+        Args:
+            orientation: Mermaid flowchart direction (for example ``LR`` or ``TB``).
+            output_path: Optional file path where generated Mermaid text is written.
+            create_url: If ``True``, return a Mermaid Live Editor URL instead of
+                raw Mermaid code.
+
+        Returns:
+            Mermaid flowchart text by default, or a Mermaid Live Editor URL when
+            ``create_url`` is ``True``.
+        """
         lines = [f"flowchart {orientation}"]
 
         ordered_blocks = sorted(
@@ -97,6 +120,7 @@ class MermaidDiagram:
         return mermaid_text
     
     def _get_mermaid_url(self, mermaid_code: str) -> str:
+        """Encode Mermaid code into a Mermaid Live Editor URL payload."""
         # 1. Define the 'state' the Live Editor expects
         state = {
             "code": mermaid_code,
