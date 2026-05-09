@@ -1,7 +1,7 @@
 import base64, gc, json, zlib
 import business_ogre as ogr
 
-class MakeDiagram:
+class MermaidDiagram:
     RELEVANT_CLASSES = [ogr.workflow.Workflow, ogr.workflow.WorkflowBlock]
 
     def __init__(self, components):
