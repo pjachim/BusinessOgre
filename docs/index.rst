@@ -11,7 +11,6 @@ Welcome to the BusinessOgre docs.
    Quick Start
    Best Practices/Neat Business Layer
    Best Practices/AI Coding
-   Prompt Strategies/index
-   Prompt Strategies/Workflow Build Prompts
-   Prompt Strategies/Usable Business File Prompts
-
+..   Prompt Strategies/index
+..   Prompt Strategies/Workflow Build Prompts
+..   Prompt Strategies/Usable Business File Prompts
