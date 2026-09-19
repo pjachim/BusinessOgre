@@ -36,7 +36,7 @@ excited_workflow.validate()
 >>> True
 """
 
-from typing import Callable, Any
+from typing import Any, NamedTuple, Optional
 
 class Workflow:
     ''' 
@@ -70,6 +70,10 @@ class Workflow:
         for i in range(len(self.blocks) - 1):
             current_block = self.blocks[i]
             next_block = self.blocks[i + 1]
+
+            # ForEach accepts any iterable, so it has no input_type to check against.
+            if isinstance(next_block, ForEach):
+                continue
 
             if not any(issubclass(t, current_block.output_type) for t in next_block.input_type):
                 raise TypeError(f"Output type of block '{current_block.name}' does not match input type of block '{next_block.name}'.")
@@ -186,3 +190,73 @@ class WorkflowBlock:
     
     def __repr__(self):
         return f"WorkflowBlock(name='{self.name}')"
+
+
+class ForEachResult(NamedTuple):
+    ''' Uniform per-item outcome produced by a ForEach block: value is None on error, error is None on success. '''
+    item: Any
+    value: Any
+    error: Optional[Exception]
+
+
+class ForEach(WorkflowBlock):
+    '''
+    A WorkflowBlock that fans out over an iterable input, running a wrapped
+    Workflow (or single WorkflowBlock) once per item, and collecting the
+    outcomes into a list of ForEachResult records. Errors raised while
+    processing an item are caught and stored on that item's result instead of
+    stopping the whole workflow.
+
+    Example usage:
+        class SplitLines(WorkflowBlock):
+            input_type = (str,)
+            output_type = (list,)
+
+            def action(self, input_data: str) -> list:
+                return input_data.splitlines()
+
+        class MakeUppercase(WorkflowBlock):
+            input_type = (str,)
+            output_type = (str,)
+
+            def action(self, input_data: str) -> str:
+                return input_data.upper()
+
+        pipeline = SplitLines("Split Lines") >> ForEach(
+            "Uppercase Each Line", MakeUppercase("Uppercase"), item_type=str
+        )
+        pipeline("hello\\nworld")
+        >>> [ForEachResult(item='hello', value='HELLO', error=None),
+             ForEachResult(item='world', value='WORLD', error=None)]
+    '''
+    def __init__(
+        self,
+        name: str,
+        workflow: "Workflow | WorkflowBlock",
+        item_type: type,
+        description: str = "",
+    ) -> None:
+        super().__init__(name, description)
+        self.workflow = workflow
+        self.item_type = item_type
+        # Accepts any iterable, so no input_type is declared for validation.
+        self.input_type = ()
+        self.output_type = (list,)
+
+        first_block = workflow.blocks[0] if isinstance(workflow, Workflow) else workflow
+        if first_block.input_type and not issubclass(item_type, first_block.input_type):
+            raise TypeError(
+                f"item_type '{item_type}' is not compatible with input_type of block '{first_block.name}'."
+            )
+
+    def action(self, input_data) -> list:
+        results: list[ForEachResult] = []
+        for item in input_data:
+            try:
+                results.append(ForEachResult(item=item, value=self.workflow(item), error=None))
+            except Exception as exc:
+                results.append(ForEachResult(item=item, value=None, error=exc))
+        return results
+
+    def __repr__(self):
+        return f"ForEach(name='{self.name}')"
