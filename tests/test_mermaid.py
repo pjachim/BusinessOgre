@@ -40,11 +40,11 @@ class Repeat(WorkflowBlock):
 class TestMermaidDiagramInitialization:
     """Test MermaidDiagram initialization with various inputs."""
 
-    def test_initialization_with_none_components(self):
-        """Test that MermaidDiagram can be initialized with None components."""
+def test_initialization_with_none_components(self):
+        """Test that None discovers live workflow components."""
+        block = MakeTextUppercase("Uppercase")
         diagram = MermaidDiagram(None)
-        assert diagram.component_blocks == []
-        assert diagram.component_flows == []
+        assert block in diagram.component_blocks
         assert diagram._alias_cache == {}
         assert diagram._used_aliases == set()
 
