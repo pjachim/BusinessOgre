@@ -243,7 +243,12 @@ class ForEach(WorkflowBlock):
         self.input_type = ()
         self.output_type = (list,)
 
-        first_block = workflow.blocks[0] if isinstance(workflow, Workflow) else workflow
+if isinstance(workflow, Workflow):
+            if not workflow.blocks:
+                raise ValueError("ForEach requires a workflow containing at least one block.")
+            first_block = workflow.blocks[0]
+        else:
+            first_block = workflow
         if first_block.input_type and not issubclass(item_type, first_block.input_type):
             raise TypeError(
                 f"item_type '{item_type}' is not compatible with input_type of block '{first_block.name}'."
