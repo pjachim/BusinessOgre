@@ -91,8 +91,8 @@ pipeline = SplitWords("Split Words") >> ogr.ForEach(
 )
 
 pipeline("hello world")
->>> [ForEachResult(item='hello', value='HELLO', error=None),
-     ForEachResult(item='world', value='WORLD', error=None)]
+>>> [ogr.ForEachResult(item='hello', value='HELLO', error=None),
+     ogr.ForEachResult(item='world', value='WORLD', error=None)]
 ```
 
 `ForEach` runs the wrapped block (or workflow) once per item and always returns a list of `ForEachResult(item, value, error)` records, one per input item. If processing an item raises an exception, that item's `error` is set and `value` is `None`, but the rest of the items still run — it never aborts the whole `ForEach` step.
