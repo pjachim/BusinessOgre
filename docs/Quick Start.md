@@ -74,6 +74,29 @@ excited_workflow.validate()
 
 Because the flows are callable, they can easily be passed to frontend code that requires a single, neat callable.
 
+## Fan-out over iterables with ForEach
+When a block's output is an iterable of items that each need their own processing, wrap the per-item pipeline in `ForEach` instead of writing a manual loop.
+
+```python
+class SplitWords(ogr.WorkflowBlock):
+    input_type = (str,)
+    output_type = (list,)  # produces one item per word
+
+    def action(self, input_data: str) -> list:
+        return input_data.split()
+
+# item_type must match the input_type of the wrapped block/workflow
+pipeline = SplitWords("Split Words") >> ogr.ForEach(
+    "Uppercase Each Word", MakeTextUppercase("Uppercase"), item_type=str
+)
+
+pipeline("hello world")
+>>> [ogr.ForEachResult(item='hello', value='HELLO', error=None),
+     ogr.ForEachResult(item='world', value='WORLD', error=None)]
+```
+
+`ForEach` runs the wrapped block (or workflow) once per item and always returns a list of `ForEachResult(item, value, error)` records, one per input item. If processing an item raises an exception, that item's `error` is set and `value` is `None`, but the rest of the items still run — it never aborts the whole `ForEach` step.
+
 ## Common workflow pattern
 If you are building a business file, a good default is:
 1. Keep one class per business step.

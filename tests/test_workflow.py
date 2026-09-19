@@ -1,6 +1,6 @@
 import pytest
 
-from business_ogre.workflows.workflow import Workflow, WorkflowBlock
+from business_ogre.workflows.workflow import ForEach, ForEachResult, Workflow, WorkflowBlock
 
 
 class MakeTextUppercase(WorkflowBlock):
@@ -25,6 +25,24 @@ class StringifyNumber(WorkflowBlock):
 
     def action(self, input_data: int) -> str:
         return str(input_data)
+
+
+class SplitWords(WorkflowBlock):
+    input_type = (str,)
+    output_type = (list,)
+
+    def action(self, input_data: str) -> list:
+        return input_data.split()
+
+
+class RaiseOnBad(WorkflowBlock):
+    input_type = (str,)
+    output_type = (str,)
+
+    def action(self, input_data: str) -> str:
+        if input_data == "bad":
+            raise ValueError("bad word")
+        return input_data.upper()
 
 
 class TestWorkflowBlock:
@@ -98,3 +116,48 @@ class TestWorkflow:
         workflow = MakeTextUppercase("Uppercase") >> AddExclamation("Add Exclamation")
 
         assert repr(workflow) == "Workflow(steps='Uppercase >> Add Exclamation')"
+
+
+class TestForEach:
+    def test_rejects_incompatible_item_type(self):
+        with pytest.raises(TypeError, match="item_type"):
+            ForEach("Uppercase Each", MakeTextUppercase("Uppercase"), item_type=int)
+
+    def test_action_collects_results_in_order(self):
+        each = ForEach("Uppercase Each", MakeTextUppercase("Uppercase"), item_type=str)
+
+        results = each.action(["a", "b"])
+
+        assert results == [
+            ForEachResult(item="a", value="A", error=None),
+            ForEachResult(item="b", value="B", error=None),
+        ]
+
+    def test_action_captures_per_item_errors(self):
+        each = ForEach("Raise On Bad", RaiseOnBad("Raise On Bad"), item_type=str)
+
+        results = each.action(["good", "bad"])
+
+        assert results[0] == ForEachResult(item="good", value="GOOD", error=None)
+        assert results[1].item == "bad"
+        assert results[1].value is None
+        assert isinstance(results[1].error, ValueError)
+
+    def test_composes_via_rshift_mid_chain(self):
+        pipeline = SplitWords("Split Words") >> ForEach(
+            "Uppercase Each", MakeTextUppercase("Uppercase"), item_type=str
+        )
+
+        results = pipeline("hello world")
+
+        assert results == [
+            ForEachResult(item="hello", value="HELLO", error=None),
+            ForEachResult(item="world", value="WORLD", error=None),
+        ]
+
+    def test_validate_skips_check_for_foreach_input(self):
+        pipeline = SplitWords("Split Words") >> ForEach(
+            "Uppercase Each", MakeTextUppercase("Uppercase"), item_type=str
+        )
+
+        assert pipeline.validate() is True
