@@ -235,14 +235,13 @@ class ForEach(WorkflowBlock):
         workflow: "Workflow | WorkflowBlock",
         item_type: type,
         description: str = "",
-        output_type: tuple[Any, ...] = (list,),
     ) -> None:
         super().__init__(name, description)
         self.workflow = workflow
         self.item_type = item_type
         # Accepts any iterable, so no input_type is declared for validation.
         self.input_type = ()
-        self.output_type = output_type if isinstance(output_type, tuple) else (output_type,)
+        self.output_type = (list,)
 
         first_block = workflow.blocks[0] if isinstance(workflow, Workflow) else workflow
         if first_block.input_type and not issubclass(item_type, first_block.input_type):
