@@ -13,8 +13,9 @@ class MermaidDiagram:
             components: Iterable of workflow components. If ``None``, all live
                 workflow objects tracked by the Python GC are scanned.
         """
-        if components is None:
+if components is None:
             components = self._list_all_possible_components()
+        components = list(components)
         self.component_blocks = self.collect_blocks(components)
         self.component_flows = [c for c in components if isinstance(c, ogr.workflow.Workflow)]
         self._alias_cache = {}
