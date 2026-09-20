@@ -1,6 +1,6 @@
 project = "BusinessOgre"
 author = "Peter Jachim"
-release = "0.1.2"
+release = "0.1.3"
 
 extensions = ["myst_parser"]
 
