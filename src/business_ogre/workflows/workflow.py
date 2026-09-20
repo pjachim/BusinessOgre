@@ -243,7 +243,7 @@ class ForEach(WorkflowBlock):
         self.input_type = ()
         self.output_type = (list,)
 
-if isinstance(workflow, Workflow):
+        if isinstance(workflow, Workflow):
             if not workflow.blocks:
                 raise ValueError("ForEach requires a workflow containing at least one block.")
             first_block = workflow.blocks[0]
