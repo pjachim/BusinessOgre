@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "business_ogre"
-version = "0.1.2"
+version = "0.1.3"
 description = "Workflows by BusinessOgre"
 readme = "README.md"
 requires-python = ">=3.10"
